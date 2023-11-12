@@ -2,10 +2,10 @@ from pyswip import *
 import re
 
 prolog = Prolog()
-prolog.consult("knowledge_base.pl", True)
+prolog.consult("INTSYMCO2/Knowledge_base.pl")
 
 statement_patterns = [
-    r'(\w+) and (\w+) are siblings.',
+    r'(\w+) and (\w+) are siblings',
     r'(\w+) is a sister of (\w+)',
     r'(\w+) is the mother of (\w+)',
     r'(\w+) is a grandmother of (\w+)',
@@ -14,6 +14,7 @@ statement_patterns = [
     r'(\w+) is an uncle of (\w+)',
     r'(\w+) is a brother of (\w+)',
     r'(\w+) is the father of (\w+)',
+    r'(\w+) and (\w+) are the parents of (\w+)'
     r'(\w+) is a grandfather of (\w+)',
     r'(\w+) is a son of (\w+)',
     r'(\w+) is a aunt of (\w+)',
@@ -55,7 +56,7 @@ def statement(sentence):
             print("I already know that")
         else:
             new_query = f"mother({child}, {mother}); male({mother})"
-            if list(prolog.query(new_query)):
+            if list(prolog.query(new_query)) or child == mother:
                 print("That's not possible")
             else:
                 prolog.assertz(f"female({mother})")
@@ -72,7 +73,7 @@ def statement(sentence):
             print("I already know that")
         else:
             new_query = f"father({child}, {father}); female({father})"
-            if list(prolog.query(new_query)):
+            if list(prolog.query(new_query)) or child == father:
                 print("That's not possible")
             else:
                 prolog.assertz(f"male({father})")
