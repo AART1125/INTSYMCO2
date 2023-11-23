@@ -5,13 +5,15 @@
 :- dynamic father/2.
 :- dynamic mother/2.
 
+son(X) :- male(X).
+daugther(X) :- female(X).
+
 parent(X) :- male(X);
              female(X).
-son(X,Y) :- child(X), male(X), parent(Y).
 daugther(X,Y) :- child(X), female(X), parent(Y).
 father(X,Y) :- parent(X), male(X), son(Y,X), X\=Y;
                parent(X), male(X), daugther(Y,X), X\=Y;
                parent(X), male(X), child(Y), X\=Y.
-mother(X,Y) :- female(X), son(Y,X);
-               female(X), daugther(Y, X);
-               parent(X), female(X), child(Y).
+mother(X,Y) :- parent(X), female(X), son(Y,X), X\=Y;
+               parent(X), female(X), daugther(Y, X), X\=Y;
+               parent(X), female(X), child(Y), X\=Y.
