@@ -11,6 +11,8 @@ child(X,Y) :-
     X \= Y,
     parent(Y,X).
 
+
+
 grandparent(X,Y) :- 
     X \= Y,
     parent(X,Z), 
@@ -67,6 +69,24 @@ uncle(X,Y) :-
     male(X),
 	sibling(X,Z), 
 	parent(Z,Y).
+
+children(W,X,Y,Z) :-
+    W \= X,
+    W \= Y,
+    W \= Z,
+    X \= Y,
+    X \= Z,
+    Y \= Z,
+    child(W,Z),
+    child(X,Z),
+    child(Y,Z).
+
+parents(X,Y,Z) :-
+    X \= Y,
+    X \= Z,
+    Y \= Z,
+    parent(X,Z),
+    parent(Y,Z).
 
 relative(X,Y) :- 
     X \= Y,
