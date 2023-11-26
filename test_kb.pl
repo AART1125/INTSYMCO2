@@ -4,6 +4,8 @@
 :- dynamic mother/1.
 :- dynamic child/1.
 :- dynamic parent/2.
+:- dynamic siblings/2.
+:- dynamic adult/1.
 
 father(X) :- male(X).
 mother(X) :- female(X).
