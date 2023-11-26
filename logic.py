@@ -48,7 +48,7 @@ question_patterns = [
     r'are (\w+) and (\w+) relatives'#23
 ]
 
-def main():
+def main():#makes the calls
     print("Hello dear user! What do you want to learn or tell me? (To end chat type END)")
     sentence = input('>> ')
     while True:
