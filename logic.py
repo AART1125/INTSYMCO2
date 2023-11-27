@@ -235,7 +235,7 @@ def statement(sentence):
                 prolog.assertz(f"parent({father},{child})")
                 print("Ok, I'll remember that")
                 
-    if index == 9:  # is the father
+    if index == 9:  # are the parents
         parent1 = match.group(1)
         parent2 = match.group(2)
         child = match.group(3)
@@ -243,17 +243,17 @@ def statement(sentence):
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            existing_father_query = f"parent({child},{parent1}); siblings({parent1},{child}), parent({child},{parent2}); siblings({parent2},{child})"
+            existing_father_query = f"parent({child},{parent1}); siblings({parent1},{child}), parent({child},{parent2}); siblings({parent2},{child}); (child({child}, Y), parent(Y,{child}), !)"
             if list(prolog.query(existing_father_query)):
                 print(f"That's not possible.")
             else:
                 prolog.assertz(f"child({child},{parent1})")
-                prolog.assertz(f"parent({parent1},{child})")
+                prolog.assertz(f"parent({parent1},{child}),")
                 prolog.assertz(f"child({child},{parent2})")
                 prolog.assertz(f"parent({parent2},{child})")
                 print("Ok, I'll remember that")
     
-    if index == 10: #is a grandfater
+    if index == 10: #is a grandfather
         grandfather = match.group(1)
         child = match.group(2)
         query = f"grandparent({grandfather},{child})" 
