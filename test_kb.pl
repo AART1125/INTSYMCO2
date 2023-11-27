@@ -6,15 +6,13 @@
                     % Since yung parent takes 2 arguments so both
                     % are similar
 :- dynamic parent/2.
+:- dynamic uncle/2.
 :- dynamic siblings/2.
 :- dynamic grandparent/2.
+:- discontiguous parent/2.
+:- discontiguous siblings/2.
 
-father(X, Y) :- male(X), child_of(Y, X).
-mother(X, Y) :- female(X), child_of(Y, X).
-parent(X, Y) :- father(X, Y), !.
-parent(X, Y) :- mother(X, Y), !.
 siblings(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
-child(X) :- child_of(_, X).
 
 parent(X,Y) :- father(X), child(Y, X), !.
 parent(X,Y) :- mother(X), child(Y, X), !.
@@ -26,8 +24,9 @@ grandparent(X,Y) :- parent(X,Z), parent(Z,Y).
 %                mother(X), child(Y,X).
 
 siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y. 
+siblings(X,Y) :- parent(X,Z), child(Z,X), X\=Y.
 % siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y.
-uncle(X,Y) :- male(X), siblings(X,Z), parent(Z,Y).
+uncle(X,Y) :- male(X), siblings(X,Z), (parent(Z,Y), child(Y,Z)).
 % OR
 % :- dynamic male/1.
 % :- dynamic female/1.
