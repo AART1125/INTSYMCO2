@@ -363,12 +363,14 @@ def question(sentence):
     if index == 7:# is a daughter?
         daughter = match.group(1)
         parent = match.group(2)
-        query = f"female({daughter}), child_of({parent},{daughter})"
+        query = f"child_of({parent},{daughter})"
         exist = bool(list(prolog.query(query)))
         if exist:
             print(f"Yes, {daughter.capitalize()} is a daughter of {parent.capitalize()}")
         else:
-            print(f"No, they are not")
+            print(f"No, {daughter.capitalize()} is not a daughter of {parent.capitalize()}")
+
+
 
     if index == 9: #is a child?
         child = match.group(1)

@@ -1,3 +1,7 @@
+set_prolog_stack(global, limit(16*10**9)).
+set_prolog_stack(local, limit(4*10**9)).
+
+
 :- dynamic male/1.
 :- dynamic female/1.
 :- dynamic father/1.
