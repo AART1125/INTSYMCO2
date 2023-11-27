@@ -9,8 +9,12 @@
 :- dynamic siblings/2.
 :- dynamic grandparent/2.
 
-father(X) :- male(X).
-mother(X) :- female(X).
+father(X, Y) :- male(X), child_of(Y, X).
+mother(X, Y) :- female(X), child_of(Y, X).
+parent(X, Y) :- father(X, Y), !.
+parent(X, Y) :- mother(X, Y), !.
+siblings(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
+child(X) :- child_of(_, X).
 
 parent(X,Y) :- father(X), child(Y, X), !.
 parent(X,Y) :- mother(X), child(Y, X), !.
