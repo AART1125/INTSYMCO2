@@ -2,7 +2,7 @@ from pyswip import Prolog
 import re
 
 prolog = Prolog()
-prolog.consult("test_kb.pl")
+prolog.consult("another.pl")
 
 statement_patterns = [
     r'(\w+) and (\w+) are siblings',  # 0
@@ -98,7 +98,7 @@ def statement(sentence):
     if index == 0: # are siblings
         sibling1 = match.group(1)
         sibling2 = match.group(2)
-        query = f"siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1}), \+ uncle({sibling1},{sibling2})"
+        query = f"siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -109,7 +109,7 @@ def statement(sentence):
     if index == 1: # is a sister
         sibling1 = match.group(1)
         sibling2 = match.group(2)
-        query = f"female({sibling1}), siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1})"
+        query = f"sister({sibling1},{sibling2})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -118,6 +118,7 @@ def statement(sentence):
                 print("That's impossible")
             else:
                 prolog.assertz(f"female({sibling1})")
+                prolog.assertz(f"sister({sibling1}, {sibling2})")
                 prolog.assertz(f"siblings({sibling1}, {sibling2})")
                 prolog.assertz(f"siblings({sibling2}, {sibling1})")
                 print("Ok, I'll remember that")
@@ -126,16 +127,16 @@ def statement(sentence):
     if index == 2:  # is the mother
         mother = match.group(1)
         child = match.group(2)
-        query = f"parent({mother},{child}), child({child},{mother}), mother({mother})" 
+        query = f"mother({mother},{child})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            new_query = f"parent({child}, {mother}); male({mother}); (child({child}, Y), female(Y), !); siblings({mother},{child}); grandparent({child},{mother})"
+            new_query = f"parent({child}, {mother}); male({mother}); siblings({mother},{child})"
             if list(prolog.query(new_query)) or child == mother:
                 print("That's not possible")
             else:
                 prolog.assertz(f"female({mother})")
-                prolog.assertz(f"mother({mother})")
+                prolog.assertz(f"mother({mother},{child})")
                 prolog.assertz(f"child({child},{mother})")
                 prolog.assertz(f"parent({mother},{child})")
                 print("Ok, I'll remember that")    
@@ -143,7 +144,7 @@ def statement(sentence):
     if index == 3: #is a grandmother
         grandmother = match.group(1)
         child = match.group(2)
-        query = f"grandparent({grandmother},{child})" 
+        query = f"grandmother({grandmother},{child})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -152,14 +153,13 @@ def statement(sentence):
                 print("That's not possible")
             else:
                 prolog.assertz(f"female({grandmother})")
-                prolog.assertz(f"mother({grandmother})")
-                prolog.assertz(f"grandparent({grandmother},{child})")
+                prolog.assertz(f"grandmother({grandmother},{child})")
                 print("Ok, I'll remember that")
     
     if index == 4: # is a child
         child = match.group(1)
         parent = match.group(2)
-        query = f"child({child},{parent}), parent({parent},{child})"
+        query = f"child({child},{parent}), parent({parent}, {child})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -174,7 +174,7 @@ def statement(sentence):
     if index == 5:  # is a daughter
         daughter = match.group(1)
         parent = match.group(2)
-        query = f"female({daughter}), child({daughter},{parent}), parent({parent}, {daughter})"
+        query = f"daughter({daughter},{parent})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -183,6 +183,7 @@ def statement(sentence):
                 print("That's impossible")
             else:
                 prolog.assertz(f"female({daughter})")
+                prolog.assertz(f"daughter({daughter},{parent})")
                 prolog.assertz(f"child({daughter},{parent})")
                 prolog.assertz(f"parent({parent}, {daughter})")
                 print("Ok, I'll remember that")
@@ -190,7 +191,7 @@ def statement(sentence):
     if index == 6:  # is an uncle
         uncle = match.group(1)
         child = match.group(2)
-        query = f"male({uncle}), uncle({uncle},{child})" 
+        query = f"uncle({uncle},{child})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -221,16 +222,16 @@ def statement(sentence):
     if index == 8:  # is the father
         father = match.group(1)
         child = match.group(2)
-        query = f"male({father}), parent({father},{child}), child({child},{father}), father({father},{child})" 
+        query = f"father({father},{child})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            existing_father_query = f"parent({child},{father}); female({father}); siblings({father},{child}); (child({child}, Y), male(Y), !)"
+            existing_father_query = f"parent({child},{father}); female({father}); siblings({father},{child})"
             if list(prolog.query(existing_father_query)):
                 print(f"That's not possible.")
             else:
                 prolog.assertz(f"male({father})")
-                prolog.assertz(f"father({father})")
+                prolog.assertz(f"father({father},{child})")
                 prolog.assertz(f"child({child},{father})")
                 prolog.assertz(f"parent({father},{child})")
                 print("Ok, I'll remember that")
@@ -248,7 +249,7 @@ def statement(sentence):
                 print(f"That's not possible.")
             else:
                 prolog.assertz(f"child({child},{parent1})")
-                prolog.assertz(f"parent({parent1},{child}),")
+                prolog.assertz(f"parent({parent1},{child})")
                 prolog.assertz(f"child({child},{parent2})")
                 prolog.assertz(f"parent({parent2},{child})")
                 print("Ok, I'll remember that")
@@ -256,7 +257,7 @@ def statement(sentence):
     if index == 10: #is a grandfather
         grandfather = match.group(1)
         child = match.group(2)
-        query = f"grandparent({grandfather},{child})" 
+        query = f"grandfather({grandfather},{child})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -265,14 +266,13 @@ def statement(sentence):
                 print("That's not possible")
             else:
                 prolog.assertz(f"male({grandfather})")
-                prolog.assertz(f"father({grandfather})")
-                prolog.assertz(f"grandparent({grandfather},{child})")
+                prolog.assertz(f"grandfather({grandfather},{child})")
                 print("Ok, I'll remember that")
     
     if index == 11:# is a son
         son = match.group(1)
         parent = match.group(2)
-        query = f"child({son},{parent})"
+        query = f"son({son},{parent})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -282,10 +282,11 @@ def statement(sentence):
             else:
                 prolog.assertz(f"male({son})")
                 prolog.assertz(f"child({son},{parent})")
+                prolog.assertz(f"son({son},{parent})")
                 prolog.assertz(f"parent({parent}, {son})")
                 print("Ok, I'll remember that")
 
-    if index == 12:  # is an aunt
+    if index == 12:  # is an uncle
         aunt = match.group(1)
         child = match.group(2)
         query = f"female({aunt}), aunt({aunt},{child})" 

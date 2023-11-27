@@ -13,18 +13,15 @@
 :- discontiguous parent/2.
 :- discontiguous siblings/2.
 
-siblings(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
+siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y. 
 
 parent(X,Y) :- father(X), child(Y, X), X\=Y, !.
 parent(X,Y) :- mother(X), child(Y, X), X\=Y, !.
 
+child(X,Y) :- parent(Y,X),!.
+
 grandparent(X,Y) :- parent(X,Z), parent(Z,Y), child(Y,Z).
 
-% Consequently,
-% parent(X,Y) :- father(X), child(Y,X);
-%                mother(X), child(Y,X).
-
-siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y. 
 % siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y.
 uncle(X,Y) :- male(X), (siblings(X,Z), child(Y,Z)).
 aunt(X,Y) :- female(X), (siblings(X,Z), child(Y,Z)).
