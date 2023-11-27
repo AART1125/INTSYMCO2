@@ -16,7 +16,6 @@ statement_patterns = [
     r'(\w+) is the father of (\w+)',#8
     r'(\w+) and (\w+) are the parents of (\w+)',#9
     r'(\w+) is a grandfather of (\w+)',#10
-    r'(\w+), (\w+) and (\w+) are children of (\w+)',#11
     r'(\w+) is a son of (\w+)',#12
     r'(\w+) is a aunt of (\w+)',#13
 ]
@@ -53,9 +52,9 @@ def main():#makes the calls
     sentence = input('>> ')
     while True:
         if sentence[-1] == '?':
-            question(sentence.lower())
+            question(sentence)
         elif sentence[-1] == '.':
-            statement(sentence.lower())
+            statement(sentence)
         elif sentence in ['hi', 'hello', 'sup', 'Hi', 'Hello']:
             print("Hello to you too!")
         elif sentence == 'END':
@@ -68,71 +67,116 @@ def main():#makes the calls
 def statement(sentence):
     index = -1
     for i in statement_patterns:
-        match = re.match(i, sentence)
+        match = re.match(i, sentence.lower())
         if match == None:
             continue
         else:
             index = statement_patterns.index(i)
             break
         
+    if index == -1: # are children of
+        try:
+            children = re.findall(r'\b[A-Z][a-z]*\b', sentence)
+            parent = children.pop()
+            known = True
+            for i in children:
+                query = f"child({i.lower()}, {parent.lower()}), parent({parent.lower()}, {i.lower()})"
+                if list(prolog.query(query)):
+                    print("I already know that")
+                else:
+                    print("I did not know that")
+                    known = False
+            if not known:
+                for i in children:
+                    prolog.assertz(f"child({i.lower()},{parent.lower()})")
+                    prolog.assertz(f"parent({parent.lower()}, {i.lower()})")
+                print("Ok, I'll remember that")
+        except IndexError:
+            print("You might have inputed the wrong type of statement. Please try again")
+            
     if index == 0: # are siblings
-        child1 = match.group(1)
-        child2 = match.group(2)
-        query = f"child({child1}), child({child2}), siblings({child1}, {child2}), siblings({child2}, {child1})"
+        sibling1 = match.group(1)
+        sibling2 = match.group(2)
+        query = f"siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            prolog.assertz(f"child({child1})")
-            prolog.assertz(f"child({child2})")
-            prolog.assertz(f"siblings({child1}, {child2})")
-            prolog.assertz(f"siblings({child2}, {child1})")
+            prolog.assertz(f"siblings({sibling1}, {sibling2})")
+            prolog.assertz(f"siblings({sibling2}, {sibling1})")
+            print("Ok, I'll remember that")
+    
+    if index == 1: # is a sister
+        sibling1 = match.group(1)
+        sibling2 = match.group(2)
+        query = f"female({sibling1}), siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1})"
+        if list(prolog.query(query)):
+            print("I already know that")
+        else:
+            prolog.assertz(f"female({sibling1})")
+            prolog.assertz(f"siblings({sibling1}, {sibling2})")
+            prolog.assertz(f"siblings({sibling2}, {sibling1})")
             print("Ok, I'll remember that")
     
     if index == 2: #is the mother
         mother = match.group(1)
         child = match.group(2)
-        query = f"parent({mother},{child})" 
+        query = f"parent({mother},{child}), child({child},{mother}), mother({mother})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            new_query = f"parent({child}, {mother}); male({mother})"
+            new_query = f"parent({child}, {mother}); male({mother}); (child({child}, Y), mother(Y) \== mother({mother}))"
             if list(prolog.query(new_query)) or child == mother:
                 print("That's not possible")
             else:
                 prolog.assertz(f"female({mother})")
                 prolog.assertz(f"mother({mother})")
-                prolog.assertz(f"child({child})")
+                prolog.assertz(f"child({child},{mother})")
                 prolog.assertz(f"parent({mother},{child})")
                 print("Ok, I'll remember that")    
+    
+    if index == 3: #is a grandmother
+        grandmother = match.group(1)
+        child = match.group(2)
+        query = f"grandparent({grandmother},{child})" 
+        if list(prolog.query(query)):
+            print("I already know that")
+        else:
+            new_query = f"parent({child},{grandmother}); male({grandmother})"
+            if list(prolog.query(new_query)) or child == grandmother:
+                print("That's not possible")
+            else:
+                prolog.assertz(f"female({grandmother})")
+                prolog.assertz(f"mother({grandmother})")
+                prolog.assertz(f"grandparent({grandmother},{child})")
+                print("Ok, I'll remember that")
     
     if index == 4: # is a child
         child = match.group(1)
         parent = match.group(2)
-        query = f"child({child}), parent({parent}, {child})"
+        query = f"child({child},{parent}), parent({parent}, {child})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            prolog.assertz(f"child({child})")
+            prolog.assertz(f"child({child},{parent})")
             prolog.assertz(f"parent({parent}, {child})")
             print("Ok, I'll remember that")
     
     if index == 5: # is a daughter
         daughter = match.group(1)
         parent = match.group(2)
-        query = f"female({daughter}), child({daughter}), parent({parent}, {daughter})"
+        query = f"female({daughter}), child({daughter},{parent}), parent({parent}, {daughter})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
             prolog.assertz(f"female({daughter})")
-            prolog.assertz(f"child({daughter})")
-            prolog.assertz(f"gparents({parent})")
-            prolog.assertz(f"parent({parent}, {daughter})")
+            prolog.assertz(f"child({daughter},{parent})")
+            prolog.assertz(f"parent({parent},{daughter})")
             print("Ok, I'll remember that")
     
     if index == 8: #is the father
         father = match.group(1)
         child = match.group(2)
-        query = f"parent(male({father}), {child})" 
+        query = f"male({father}), parent({father},{child}), child({child},{father})" 
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -142,24 +186,24 @@ def statement(sentence):
             else:
                 prolog.assertz(f"male({father})")
                 prolog.assertz(f"father({father})")
-                prolog.assertz(f"child({child})")
+                prolog.assertz(f"child({child},{father})")
                 prolog.assertz(f"parent({father},{child})")
                 print("Ok, I'll remember that")
     
-    if index == 12:# is a son
+    if index == 11:# is a son
         son = match.group(1)
         parent = match.group(2)
-        query = f"male({son}), child({son}), parent({parent}, {son})"
+        query = f"male({son}), child({son},{parent}), parent({parent}, {son})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
             prolog.assertz(f"male({son})")
-            prolog.assertz(f"child({son})")
+            prolog.assertz(f"child({son},{parent})")
             prolog.assertz(f"parent({parent}, {son})")
             print("Ok, I'll remember that")
 
 def question(sentence):
-    index = 0
+    index = -1
     for i in question_patterns:
         match = re.match(i, sentence)
         if match == None:
@@ -171,7 +215,7 @@ def question(sentence):
     if index == 0:
         child1 = match.group(1)
         child2 = match.group(2)
-        query = f"child({child1}), child({child2}), siblings({child1}, {child2}), siblings({child2}, {child1})"
+        query = f"siblings({child1}, {child2}), siblings({child2}, {child1})"
         exist = bool(list(prolog.query(query)))
         if exist:
             print(f"Yes, {child1.capitalize()} and {child2.capitalize()} are siblings.")
@@ -181,7 +225,7 @@ def question(sentence):
     if index == 3:
         mother = match.group(1)
         child = match.group(2)
-        query = f"parent({mother}, {child}), mother({mother}), child({child})"
+        query = f"parent({mother}, {child})"
         exist = bool(list(prolog.query(query)))
         if exist:
             print(f"Yes, the mother of {child.capitalize()} is {mother.capitalize()}")
@@ -191,10 +235,20 @@ def question(sentence):
     if index == 4:
         father = match.group(1)
         child = match.group(2)
-        query = f"parent({father}, {child}), father({father}), child({child})"
+        query = f"parent({father}, {child}), father({father}), child({child}, {father})"
         exist = bool(list(prolog.query(query)))
         if exist:
             print(f"Yes, the father of {child.capitalize()} is {father.capitalize()}")
+        else:
+            print(f"No, they are not")
+            
+    if index == 6:
+        grandmother = match.group(1)
+        child = match.group(2)
+        query = f"grandparent({grandmother}, {child}), parent({grandmother}, X), parent(X, {child}), child({child},X)"
+        exist = bool(list(prolog.query(query)))
+        if exist:
+            print(f"Yes, the grandmother of {child.capitalize()} is {grandmother.capitalize()}")
         else:
             print(f"No, they are not")
             
