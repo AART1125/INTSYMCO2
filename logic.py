@@ -21,30 +21,30 @@ statement_patterns = [
 ]
 
 question_patterns = [
-    r'are (\w+) and (\w+) siblings',  # 0
-    r'is (\w+) a sister of (\w+)',  # 1
-    r'is (\w+) a brother of (\w+)',  # 2
-    r'is (\w+) the mother of (\w+)',  # 3
-    r'is (\w+) the father of (\w+)',  # 4
-    r'are (\w+) and (\w+) the parents of (\w+)',  # 5
-    r'is (\w+) a grandmother of (\w+)',  # 6
-    r'is (\w+) a daughter of (\w+)',  # 7
-    r'is (\w+) a son of (\w+)',  # 8
-    r'is (\w+) a child of (\w+)',  # 9
-    r'are (\w+),(\w+) and (\w+), children of (\w+)',  # 10
-    r'is (\w+) an uncle of (\w+)',  # 11
-    r'who are the siblings of (\w+)',  # 12
-    r'who are the sisters of (\w+)',  # 13
-    r'who are the brothers of (\w+)',  # 14
-    r'who is the mother of (\w+)',  # 15
-    r'who is the father of (\w+)',  # 16
-    r'who are the parents of (\w+)',  # 17
-    r'is (\w+) a grandfather of (\w+)',  # 18
-    r'who are the daughters of (\w+)',  # 19
-    r'who are the sons of (\w+)',  # 20
-    r'who are the children of (\w+)',  # 21
-    r'is (\w+) an aunt of (\w+)',  # 22
-    r'are (\w+) and (\w+) relatives'  # 23
+    r'Are (\w+) and (\w+) siblings',  # 0
+    r'Is (\w+) a sister of (\w+)',  # 1
+    r'Is (\w+) a brother of (\w+)',  # 2
+    r'Is (\w+) the mother of (\w+)',  # 3
+    r'Is (\w+) the father of (\w+)',  # 4
+    r'Are (\w+) and (\w+) the parents of (\w+)',  # 5
+    r'Is (\w+) a grandmother of (\w+)',  # 6
+    r'Is (\w+) a daughter of (\w+)',  # 7
+    r'Is (\w+) a son of (\w+)',  # 8
+    r'Is (\w+) a child of (\w+)',  # 9
+    r'Are (\w+),(\w+) and (\w+), children of (\w+)',  # 10
+    r'Is (\w+) an uncle of (\w+)',  # 11
+    r'Who are the siblings of (\w+)',  # 12
+    r'Who are the sisters of (\w+)',  # 13
+    r'Who are the brothers of (\w+)',  # 14
+    r'Who is the mother of (\w+)',  # 15
+    r'Who is the father of (\w+)',  # 16
+    r'Who are the parents of (\w+)',  # 17
+    r'Is (\w+) a grandfather of (\w+)',  # 18
+    r'Who are the daughters of (\w+)',  # 19
+    r'Who are the sons of (\w+)',  # 20
+    r'Who are the children of (\w+)',  # 21
+    r'Is (\w+) an aunt of (\w+)',  # 22
+    r'Are (\w+) and (\w+) relatives'  # 23
 ]
 
 def main():
@@ -98,7 +98,7 @@ def statement(sentence):
     if index == 0: # are siblings
         sibling1 = match.group(1)
         sibling2 = match.group(2)
-        query = f"siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1})"
+        query = f"siblings({sibling1}, {sibling2}), siblings({sibling2}, {sibling1}), \+ uncle({sibling1},{sibling2})"
         if list(prolog.query(query)):
             print("I already know that")
         else:
@@ -130,7 +130,7 @@ def statement(sentence):
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            new_query = f"parent({child}, {mother}); male({mother}); (child({child}, Y), mother(Y) \== mother({mother})); siblings({mother},{child})"
+            new_query = f"parent({child}, {mother}); male({mother}); (child({child}, Y), female(Y), !); siblings({mother},{child}); grandparent({child},{mother})"
             if list(prolog.query(new_query)) or child == mother:
                 print("That's not possible")
             else:
@@ -163,9 +163,13 @@ def statement(sentence):
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            prolog.assertz(f"child({child},{parent})")
-            prolog.assertz(f"parent({parent},{child})")
-            print("Ok, I'll remember that")
+            new_query = f"child({parent},{child}); parent({child},{parent})"
+            if list(prolog.query(new_query)):
+                print("That's not possible")
+            else:
+                prolog.assertz(f"child({child},{parent})")
+                prolog.assertz(f"parent({parent},{child})")
+                print("Ok, I'll remember that")
 
     if index == 5:  # is a daughter
         daughter = match.group(1)
@@ -196,7 +200,6 @@ def statement(sentence):
             else:
                 prolog.assertz(f"male({uncle})")
                 prolog.assertz(f"uncle({uncle},{child})")
-                prolog.assertz(f"siblings({uncle},parent(X,{child}))")
                 print("Ok, I'll remember that")
 
     if index == 7: # is a brother
@@ -222,7 +225,7 @@ def statement(sentence):
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            existing_father_query = f"(male(X), parent(X, {child}), male(X) \== male({father})); female({father}); siblings({father},{child})"
+            existing_father_query = f"parent({child},{father}); female({father}); siblings({father},{child}); (child({child}, Y), male(Y), !)"
             if list(prolog.query(existing_father_query)):
                 print(f"That's not possible.")
             else:
@@ -230,6 +233,40 @@ def statement(sentence):
                 prolog.assertz(f"father({father})")
                 prolog.assertz(f"child({child},{father})")
                 prolog.assertz(f"parent({father},{child})")
+                print("Ok, I'll remember that")
+                
+    if index == 9:  # is the father
+        parent1 = match.group(1)
+        parent2 = match.group(2)
+        child = match.group(3)
+        query = f"parent({parent1},{child}), child({child},{parent1}), parent({parent2},{child}), child({child},{parent2})" 
+        if list(prolog.query(query)):
+            print("I already know that")
+        else:
+            existing_father_query = f"parent({child},{parent1}); siblings({parent1},{child}), parent({child},{parent2}); siblings({parent2},{child})"
+            if list(prolog.query(existing_father_query)):
+                print(f"That's not possible.")
+            else:
+                prolog.assertz(f"child({child},{parent1})")
+                prolog.assertz(f"parent({parent1},{child})")
+                prolog.assertz(f"child({child},{parent2})")
+                prolog.assertz(f"parent({parent2},{child})")
+                print("Ok, I'll remember that")
+    
+    if index == 10: #is a grandfater
+        grandfather = match.group(1)
+        child = match.group(2)
+        query = f"grandparent({grandfather},{child})" 
+        if list(prolog.query(query)):
+            print("I already know that")
+        else:
+            new_query = f"parent({child},{grandfather}); female({grandfather}); siblings({grandfather},{child}); grandparent({child},{grandfather})"
+            if list(prolog.query(new_query)) or child == grandfather:
+                print("That's not possible")
+            else:
+                prolog.assertz(f"male({grandfather})")
+                prolog.assertz(f"father({grandfather})")
+                prolog.assertz(f"grandparent({grandfather},{child})")
                 print("Ok, I'll remember that")
     
     if index == 11:# is a son
@@ -248,6 +285,20 @@ def statement(sentence):
                 prolog.assertz(f"parent({parent}, {son})")
                 print("Ok, I'll remember that")
 
+    if index == 12:  # is an uncle
+        aunt = match.group(1)
+        child = match.group(2)
+        query = f"female({aunt}), aunt({aunt},{child})" 
+        if list(prolog.query(query)):
+            print("I already know that")
+        else:
+            new_query = f"parent({child},{aunt}); parent({aunt},{child}); siblings({child},{aunt})"
+            if list(prolog.query(new_query)):
+                print(f"That's not possible.")
+            else:
+                prolog.assertz(f"female({aunt})")
+                prolog.assertz(f"aunt({aunt},{child})")
+                print("Ok, I'll remember that")
 
 def question(sentence):
     index = -1
@@ -266,6 +317,16 @@ def question(sentence):
         exist = bool(list(prolog.query(query)))
         if exist:
             print(f"Yes, {child1.capitalize()} and {child2.capitalize()} are siblings.")
+        else:
+            print(f"No, they are not")
+
+    if index == 1: # is a sister?
+        sister = match.group(1)
+        sibling = match.group(2)
+        query = f"siblings({sister}, {sibling})"
+        exist = bool(list(prolog.query(query)))
+        if exist:
+            print(f"Yes, the sister of {sibling.capitalize()} is {sister.capitalize()}")
         else:
             print(f"No, they are not")
 

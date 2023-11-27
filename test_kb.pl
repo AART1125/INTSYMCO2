@@ -7,6 +7,7 @@
                     % are similar
 :- dynamic parent/2.
 :- dynamic uncle/2.
+:- dynamic aunt/2.
 :- dynamic siblings/2.
 :- dynamic grandparent/2.
 :- discontiguous parent/2.
@@ -14,19 +15,19 @@
 
 siblings(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
 
-parent(X,Y) :- father(X), child(Y, X), !.
-parent(X,Y) :- mother(X), child(Y, X), !.
+parent(X,Y) :- father(X), child(Y, X), X\=Y, !.
+parent(X,Y) :- mother(X), child(Y, X), X\=Y, !.
 
-grandparent(X,Y) :- parent(X,Z), parent(Z,Y).
+grandparent(X,Y) :- parent(X,Z), parent(Z,Y), child(Y,Z).
 
 % Consequently,
 % parent(X,Y) :- father(X), child(Y,X);
 %                mother(X), child(Y,X).
 
 siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y. 
-siblings(X,Y) :- parent(X,Z), child(Z,X), X\=Y.
 % siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y.
-uncle(X,Y) :- male(X), siblings(X,Z), (parent(Z,Y), child(Y,Z)).
+uncle(X,Y) :- male(X), (siblings(X,Z), child(Y,Z)).
+aunt(X,Y) :- female(X), (siblings(X,Z), child(Y,Z)).
 % OR
 % :- dynamic male/1.
 % :- dynamic female/1.
