@@ -18,7 +18,7 @@ siblings(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
 parent(X,Y) :- father(X), child(Y, X), X\=Y, !.
 parent(X,Y) :- mother(X), child(Y, X), X\=Y, !.
 
-grandparent(X,Y) :- parent(X,Z), parent(Z,Y), child(Y,Z).
+grandparent(X,Y) :- parent(X,Z), parent(Z,Y), child(Y,Z), X\=Y.
 
 % Consequently,
 % parent(X,Y) :- father(X), child(Y,X);
@@ -26,8 +26,8 @@ grandparent(X,Y) :- parent(X,Z), parent(Z,Y), child(Y,Z).
 
 siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y. 
 % siblings(X,Y) :- parent(Z,X), parent(Z,Y), X\=Y.
-uncle(X,Y) :- male(X), (siblings(X,Z), child(Y,Z)).
-aunt(X,Y) :- female(X), (siblings(X,Z), child(Y,Z)).
+uncle(X,Y) :- male(X), (siblings(X,Z), child(Y,Z)), X\=Y.
+aunt(X,Y) :- female(X), (siblings(X,Z), child(Y,Z)), X\=Y.
 % OR
 % :- dynamic male/1.
 % :- dynamic female/1.

@@ -225,7 +225,7 @@ def statement(sentence):
         if list(prolog.query(query)):
             print("I already know that")
         else:
-            existing_father_query = f"parent({child},{father}); female({father}); siblings({father},{child}); (child({child}, Y), male(Y), !)"
+            existing_father_query = f"parent({child},{father}); female({father}); siblings({father},{child}); (child({child}, Y), male(Y), !); grandparent({child},{father})"
             if list(prolog.query(existing_father_query)):
                 print(f"That's not possible.")
             else:
