@@ -49,8 +49,8 @@ granddaughter(X, Y) :- daughter(X, Z), (grandfather(Y,Z); grandmother(Y,Z)), X \
 uncle(X,Y) :- male(X), brother(X,Z), parent(Z,Y), X \= Y.
 aunt(X,Y) :- female(X), sister(X,Z), parent(Z,Y), X \= Y.
 
-thirddegree(X,Y) :- siblings(X,Z), parent(Z,Y), X \= Y.
-thirddegree(X,Y) :- parent(W,X), parent(Z,Y), (siblings(W,Z);siblings(Z,W)), X \= Y.
+thirddegree(X,Y) :- siblings(X,Z), parent(Z,Y), X \= Y.%Genderless sibling of parents
+thirddegree(X,Y) :- parent(W,X), parent(Z,Y), (siblings(W,Z);siblings(Z,W)), X \= Y.%Cousins
 
 relatives(X,Y) :- siblings(X,Y), X \= Y.
 relatives(X,Y) :- parent(X,Z), parent(Y,Z), X \= Y.
