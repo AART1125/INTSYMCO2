@@ -21,8 +21,8 @@ child(X,Y) :- parent(Y,X).
 child(X,Y) :- son(X,Y).
 child(X,Y) :- daughter(X,Y).
 
-father(X,Y) :- male(X), parent(Y,X), X\=Y,!.
-mother(X,Y) :- female(X), parent(Y,X), X\=Y,!.
+father(X,Y) :- male(X), parent(X,Y), X\=Y,!.
+mother(X,Y) :- female(X), parent(X,Y), X\=Y,!.
 
 son(X,Y) :- male(X), (father(Y,X);mother(Y,X);parent(Y,X)).
 daughter(X,Y) :- female(X), (father(Y,X);mother(Y,X);parent(Y,X)).
