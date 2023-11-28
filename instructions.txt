@@ -28,7 +28,7 @@ Instructions for the operation of the program:
     '__ is an aunt of __'   
     '__,__,__, and __ are children of __' (note: this can be multiple children)
 
-3. When stating a question in the Chatbot, make sure the prompt ends with a question mark '?' and the prompt is 
+3. When asking a question in the Chatbot, make sure the prompt ends with a question mark '?' and the prompt is 
    one of the valid question prompts given below:
 
     'Are __ and __ siblings'  
@@ -55,3 +55,8 @@ Instructions for the operation of the program:
     'Is __ an aunt of __'  
     'Are __ and __ relatives'  
     'Are __,__,__, and __ are children of __' (note: this can be multiple children)
+
+4. If you did a prompt and no statment indicating that the chatbot has recognized the prompt happened, you may have inputted a wrong prompt
+   so just make sure to use the correct format at the next prompt.
+
+5. Enjoy!
