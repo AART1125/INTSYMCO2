@@ -331,6 +331,16 @@ def question(sentence):
         else:
             print(f"No, they are not")
 
+    if index == 2: # is a brother?
+        brother = match.group(1)
+        sibling = match.group(2)
+        query = f"siblings({brother}, {sibling})"
+        exist = bool(list(prolog.query(query)))
+        if exist:
+            print(f"Yes, the brother of {sibling.capitalize()} is {brother.capitalize()}")
+        else:
+            print(f"No, they are not")
+
     if index == 3: # is the mother?
         mother = match.group(1)
         child = match.group(2)
@@ -350,6 +360,21 @@ def question(sentence):
             print(f"Yes, the father of {child.capitalize()} is {father.capitalize()}")
         else:
             print(f"No, they are not")
+
+    elif index == 5:  # are the parents?
+        parent1 = match.group(1)
+        parent2 = match.group(2)
+        child = match.group(3)
+
+        if parent1.lower() != parent2.lower():
+            query = f"parent({parent1},{child}), parent({parent2},{child})"
+            exist = bool(list(prolog.query(query)))
+            if exist:
+                print(f"Yes, {parent1.capitalize()} and {parent2.capitalize()} are the parents of {child.capitalize()}")
+            else:
+                print(f"No, they are not")
+        else:
+            print("Please provide distinct parents.")
             
     if index == 6: #is the grandmother?
         grandmother = match.group(1)
@@ -364,10 +389,20 @@ def question(sentence):
     if index == 7:# is a daughter?
         daughter = match.group(1)
         parent = match.group(2)
-        query = f"female({daughter}), child_of({parent},{daughter})"
+        query = f"female({daughter}), (father({parent}, {daughter}); mother({parent}, {daughter}); parent({parent}, {daughter}))"
         exist = bool(list(prolog.query(query)))
-        if exist:
+        if exist and parent != daughter:
             print(f"Yes, {daughter.capitalize()} is a daughter of {parent.capitalize()}")
+        else:
+            print(f"No, they are not")
+
+    if index == 8:# is a son?
+        son = match.group(1)
+        parent = match.group(2)
+        query = f"male({son}), (father({parent}, {son}); mother({parent}, {son}); parent({parent}, {son}))"
+        exist = bool(list(prolog.query(query)))
+        if exist and parent != son:
+            print(f"Yes, {son.capitalize()} is a son of {parent.capitalize()}")
         else:
             print(f"No, they are not")
 
@@ -381,6 +416,103 @@ def question(sentence):
         else:
             print(f"No, they are not")
 
+    if index == 10: # Are (\w+),(\w+) and (\w+), children of (\w+)?
+        child1 = match.group(1)
+        child2 = match.group(2)
+        child3 = match.group(3)
+        parent = match.group(4)
+
+        query = f"child({child1},{parent}), child({child2},{parent}), child({child3},{parent})"
+        exist = bool(list(prolog.query(query)))
+
+        if exist:
+            print(f"Yes, {child1.capitalize()}, {child2.capitalize()}, and {child3.capitalize()} are children of {parent.capitalize()}")
+        else:
+            print(f"No, they are not")
+
+    if index == 11: # Is (\w+) an uncle of (\w+)?
+        uncle = match.group(1)
+        child = match.group(2)
+
+        query = f"uncle({uncle},{child})"
+        exist = bool(list(prolog.query(query)))
+
+        if exist:
+            print(f"Yes, {uncle.capitalize()} is an uncle of {child.capitalize()}")
+        else:
+            print(f"No, they are not")
+
+    if index == 12: # Who are the siblings of (\w+)?
+        person = match.group(1)
+
+        query = f"siblings({person}, Sibling)"
+        siblings = list(prolog.query(query))
+
+        if siblings:
+            sibling_names = [s["Sibling"].capitalize() for s in siblings]
+            print(f"The siblings of {person.capitalize()} are: {', '.join(sibling_names)}")
+        else:
+            print(f"{person.capitalize()} has no known siblings.")
+    
+    if index == 13:  # Who are the sisters of (\w+)?
+        sibling = match.group(1)
+        query = f"sister(Sister, {sibling.lower()}), Sister \\= {sibling.lower()}"
+        exist = list(prolog.query(query))
+        if exist:
+            sisters = set(s["Sister"].capitalize() for s in exist)
+            print(f"The sisters of {sibling.capitalize()} are: {', '.join(sisters)}")
+        else:
+            print(f"{sibling.capitalize()} has no sisters")
+
+    if index == 14: # Who are the brothers of (\w+)?
+        sibling = match.group(1)
+        query = f"brother(Brother, {sibling.lower()}), Brother \\= {sibling.lower()}"
+        exist = list(prolog.query(query))
+        if exist:
+            brothers = set(b["Brother"].capitalize() for b in exist)
+            print(f"The brothers of {sibling.capitalize()} are: {', '.join(brothers)}")
+        else:
+            print(f"{sibling.capitalize()} has no brothers")
+
+
+    if index == 15: # Who is the mother of (\w+)?
+        child = match.group(1)
+        query = f"mother(X, {child})"
+        mothers = list(prolog.query(query))
+        if mothers:
+            print(f"The mother of {child.capitalize()} is: {mothers[0]['X'].capitalize()}")
+        else:
+            print(f"I don't know who the mother of {child.capitalize()} is.")
+
+    if index == 16: # Who is the father of (\w+)?
+        child = match.group(1)
+        query = f"father(X, {child})"
+        fathers = list(prolog.query(query))
+        if fathers:
+            print(f"The father of {child.capitalize()} is: {fathers[0]['X'].capitalize()}")
+        else:
+            print(f"I don't know who the father of {child.capitalize()} is.")
+
+    if index == 17:  # who are parents?
+        child = match.group(1)
+        query = f"parent(Parent, {child.lower()})"
+        exist = list(prolog.query(query))
+        if exist:
+            parents = set(p["Parent"].capitalize() for p in exist)
+            print(f"The parents of {child.capitalize()} are: {', '.join(parents)}")
+        else:
+            print(f"{child.capitalize()} has no known parents")
+    
+    if index == 18:  # is grandfather?
+        grandfather = match.group(1)
+        child = match.group(2)
+        query = f"grandfather({grandfather.lower()}, {child.lower()})"
+        exist = bool(list(prolog.query(query)))
+        if exist:
+            print(f"Yes, {grandfather.capitalize()} is a grandfather of {child.capitalize()}")
+        else:
+            print(f"No, {grandfather.capitalize()} is not a grandfather of {child.capitalize()}")
+
     if index == 19:# who are the daughters.
         parent = match.group(1)
         query = f"parent({parent},Y), female(Y)"
@@ -391,6 +523,49 @@ def question(sentence):
             print(f"These are the daughters of {parent.capitalize()}")
         else:
             print(f"{parent.capitalize()} has no daughters")
+
+    if index == 20:# who are the sons.
+        parent = match.group(1)
+        query = f"parent({parent},Y), male(Y)"
+        exist = list(prolog.query(query))
+        if exist:
+            for i in exist:
+                print(i["Y"].capitalize())
+            print(f"These are the sons of {parent.capitalize()}")
+        else:
+            print(f"{parent.capitalize()} has no sons")
+
+    if index == 21:  # Who are the children?
+        parent = match.group(1)
+        query = f"parent({parent.lower()}, Child), child(Child, {parent.lower()})"
+        exist = list(prolog.query(query))
+        if exist:
+            children = set(c["Child"].capitalize() for c in exist)
+            print(f"The children of {parent.capitalize()} are: {', '.join(children)}")
+        else:
+            print(f"{parent.capitalize()} has no children")
+
+    if index == 22: # is aunt?
+        aunt = match.group(1)
+        child = match.group(2)
+
+        query = f"aunt({aunt},{child})"
+        exist = bool(list(prolog.query(query)))
+
+        if exist:
+            print(f"Yes, {aunt.capitalize()} is an aunt of {child.capitalize()}")
+        else:
+            print(f"No, they are not")
+
+    if index == 23:  # Are relatives?
+        person1 = match.group(1)
+        person2 = match.group(2)
+        query = f"relatives({person1.lower()}, {person2.lower()})"
+        exist = bool(list(prolog.query(query)))
+        if exist:
+            print(f"Yes, {person1.capitalize()} and {person2.capitalize()} are relatives.")
+        else:
+            print(f"No, {person1.capitalize()} and {person2.capitalize()} are not relatives.")
 
 if __name__ == "__main__":
     main()

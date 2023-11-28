@@ -2,9 +2,7 @@
 :- dynamic female/1.
 :- dynamic father/2.
 :- dynamic mother/2.
-:- dynamic child/2. % Maybe change to child/2 
-                    % Since yung parent takes 2 arguments so both
-                    % are similar
+:- dynamic child/2.
 :- dynamic son/2.
 :- dynamic daughter/2.
 :- dynamic parent/2.
@@ -31,7 +29,7 @@ daughter(X,Y) :- female(X), (father(Y,X);mother(Y,X);parent(Y,X)).
 
 siblings(X,Y) :- (parent(Z,X), parent(Z,Y));(mother(Z,X),mother(Z,Y));(father(Z,X),father(Z,Y)), X\=Y. 
 
-sister(X,Y) :- female(X), siblings(X,Y), X\=Y.
+sister(X, Y) :- female(X), siblings(X,Y), X \= Y.
 brother(X,Y) :- male(X), siblings(X,Y), X\=Y.
 
 grandfather(X,Y) :- male(X), father(X,Z), parent(Z,Y).
@@ -44,3 +42,13 @@ grandmother(X,Y) :- female(X), mother(X,Z), father(Z,Y).
 
 uncle(X,Y) :- male(X), brother(X,Z), parent(Z,Y).
 aunt(X,Y) :- female(X), sister(X,Z), parent(Z,Y).
+
+relatives(X, Y) :- siblings(X, Y).
+relatives(X, Y) :- parent(X, Z), parent(Y, Z), X \= Y.
+relatives(X, Y) :- parent(X, Z), siblings(Y, Z), X \= Y.
+relatives(X, Y) :- parent(Y, Z), siblings(X, Z), X \= Y.
+relatives(X, Y) :- aunt(X, Y).
+relatives(X, Y) :- uncle(X, Y).
+relatives(X, Y) :- grandfather(X, Y).
+relatives(X, Y) :- grandmother(X, Y).
+
