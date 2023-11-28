@@ -1,0 +1,57 @@
+Hello dear User! This is the Chatbot implemented by Group 3 of the CSINTSY class of Miss Zamin Norshuhani.
+
+Members:
+Feliciano, Jan Robee Estacio
+Sandoval, Lee Brien Villasenor
+Siazon, Jalene Graciella Tubbali
+Toledo, Aaron Ace Ramos
+Valdellon, Derrick Munoz
+
+Instructions for the operation of the program:
+1. Make sure that all subjects being used in the Chatbot is in capitalized form. (ex. John, Ken)
+
+2. When stating a fact in the Chatbot, make sure the prompt ends with a period '.' and the prompt is one of the valid  
+   prompts given below:
+    
+    '__ and __ are siblings'
+    '__ is a sister of __'   
+    '__ is the mother of __'   
+    '__ is a grandmother of __'   
+    '__ is a child of __'   
+    '__ is a daughter of __'   
+    '__ is an uncle of __'   
+    '__ is a brother of __'   
+    '__ is the father of __'   
+    '__ and __ are the parents of __'   
+    '__ is a grandfather of __'   
+    '__ is a son of __'   
+    '__ is an aunt of __'   
+    '__,__,__, and __ are children of __' (note: this can be multiple children)
+
+3. When stating a question in the Chatbot, make sure the prompt ends with a question mark '?' and the prompt is 
+   one of the valid question prompts given below:
+
+    'Are __ and __ siblings'  
+    'Is __ a sister of __'  
+    'Is __ a brother of __'  
+    'Is __ the mother of __'  
+    'Is __ the father of __'  
+    'Are __ and __ the parents of __'  
+    'Is __ a grandmother of __'  
+    'Is __ a daughter of __'  
+    'Is __ a son of __'  
+    'Is __ a child of __'  
+    'Is __ an uncle of __'  
+    'Who are the siblings of __'  
+    'Who are the sisters of __'  
+    'Who are the brothers of __'  
+    'Who is the mother of __'  
+    'Who is the father of __'  
+    'Who are the parents of __'  
+    'Is __ a grandfather of __'  
+    'Who are the daughters of __'  
+    'Who are the sons of __'  
+    'Who are the children of __'  
+    'Is __ an aunt of __'  
+    'Are __ and __ relatives'  
+    'Are __,__,__, and __ are children of __' (note: this can be multiple children)
