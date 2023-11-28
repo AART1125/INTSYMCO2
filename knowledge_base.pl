@@ -16,8 +16,8 @@
 :- dynamic grandchild/2.
 :- dynamic grandson/2.
 :- dynamic granddaughter/2.
-:- discontiguous parent/2.
-:- discontiguous siblings/2.
+:- discontiguous father/2.
+:- discontiguous mother/2.
 
 father(X,Y) :- male(X), parent(X,Y), X\=Y,!.
 mother(X,Y) :- female(X), parent(X,Y), X\=Y,!.

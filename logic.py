@@ -2,7 +2,7 @@ from pyswip import Prolog
 import re
 
 prolog = Prolog()
-prolog.consult("another.pl")
+prolog.consult("knowledge_base.pl")
 
 statement_patterns = [
     r'(\w+) and (\w+) are siblings',  # 0
