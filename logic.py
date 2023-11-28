@@ -449,19 +449,17 @@ def question(sentence):
 
     if index == 11: # Who are the siblings of (\w+)?
         person = match.group(1)
-
-        query = f"siblings({person}, Sibling)"
+        query = f"siblings({person}, Sibling), Sibling \== {person.lower()}"
         siblings = list(prolog.query(query))
-
         if siblings:
-            sibling_names = [s["Sibling"].capitalize() for s in siblings if s["Sibling"] != person.lower()]
+            sibling_names = set([s["Sibling"].capitalize() for s in siblings])
             print(f"The siblings of {person.capitalize()} are: {', '.join(sibling_names)}")
         else:
             print(f"{person.capitalize()} has no known siblings.")
     
     if index == 12:  # Who are the sisters of (\w+)?
         sibling = match.group(1)
-        query = f"sister(Sister, {sibling.lower()}), Sister \\= {sibling.lower()}"
+        query = f"sister(Sister, {sibling.lower()}), Sister \== {sibling.lower()}"
         exist = list(prolog.query(query))
         if exist:
             sisters = set(s["Sister"].capitalize() for s in exist)
@@ -471,7 +469,7 @@ def question(sentence):
 
     if index == 13: # Who are the brothers of (\w+)?
         sibling = match.group(1)
-        query = f"brother(Brother, {sibling.lower()}), Brother \\= {sibling.lower()}"
+        query = f"brother(Brother, {sibling.lower()}), Brother \== {sibling.lower()}"
         exist = list(prolog.query(query))
         if exist:
             brothers = set(b["Brother"].capitalize() for b in exist)
