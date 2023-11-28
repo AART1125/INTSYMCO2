@@ -44,7 +44,7 @@ grandmother(X,Y) :- female(X), mother(X,Z), father(Z,Y), X \= Y.
 
 grandchild(X, Y) :- grandfather(Y,X); grandmother(Y,X), X \= Y.
 grandson(X, Y) :- male(X), grandchild(X,Y), X \= Y.
-granddaughter(X, Y) :- male(X), grandchild(X,Y), X \= Y.
+granddaughter(X, Y) :- female(X), grandchild(X,Y), X \= Y.
 
 uncle(X,Y) :- male(X), brother(X,Z), parent(Z,Y), X \= Y.
 aunt(X,Y) :- female(X), sister(X,Z), parent(Z,Y), X \= Y.
