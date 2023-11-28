@@ -498,7 +498,7 @@ def question(sentence):
         else:
             print(f"I don't know who the father of {child.capitalize()} is.")
 
-    if index == 16:  # who are parents?
+    if index == 16:  # who are the parents?
         child = match.group(1)
         query = f"parent(Parent, {child.lower()})"
         exist = list(prolog.query(query))
@@ -520,23 +520,21 @@ def question(sentence):
 
     if index == 18:# who are the daughters.
         parent = match.group(1)
-        query = f"parent({parent},Y), female(Y)"
+        query = f"daughter(Daughter,{parent})"
         exist = list(prolog.query(query))
         if exist:
-            for i in exist:
-                print(i["Y"].capitalize())
-            print(f"These are the daughters of {parent.capitalize()}")
+            daughters = set(d["Daughter"].capitalize() for d in exist)
+            print(f"The daughters of {parent.capitalize()} are: {', '.join(daughters)}")
         else:
             print(f"{parent.capitalize()} has no daughters")
 
     if index == 19:# who are the sons.
         parent = match.group(1)
-        query = f"parent({parent},Y), male(Y)"
+        query = f"son(Son, {parent})"
         exist = list(prolog.query(query))
         if exist:
-            for i in exist:
-                print(i["Y"].capitalize())
-            print(f"These are the sons of {parent.capitalize()}")
+            sons = set(d["Son"].capitalize() for d in exist)
+            print(f"The sons of {parent.capitalize()} are: {', '.join(sons)}")
         else:
             print(f"{parent.capitalize()} has no sons")
 
