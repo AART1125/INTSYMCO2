@@ -42,9 +42,9 @@ grandmother(X,Y) :- female(X), mother(X,Z), parent(Z,Y), X \= Y.
 grandmother(X,Y) :- female(X), mother(X,Z), mother(Z,Y), X \= Y.
 grandmother(X,Y) :- female(X), mother(X,Z), father(Z,Y), X \= Y.
 
-grandchild(X, Y) :- child(X, Z), (grandfather(Y,Z); grandmother(Y,Z)), X \= Y.
-grandson(X, Y) :- son(X, Z), (grandfather(Y,Z); grandmother(Y,Z)), X \= Y.
-granddaughter(X, Y) :- daughter(X, Z), (grandfather(Y,Z); grandmother(Y,Z)), X \= Y.
+grandchild(X, Y) :- grandfather(Y,X); grandmother(Y,X), X \= Y.
+grandson(X, Y) :- male(X), grandchild(X,Y), X \= Y.
+granddaughter(X, Y) :- male(X), grandchild(X,Y), X \= Y.
 
 uncle(X,Y) :- male(X), brother(X,Z), parent(Z,Y), X \= Y.
 aunt(X,Y) :- female(X), sister(X,Z), parent(Z,Y), X \= Y.
